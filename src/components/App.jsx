@@ -11,16 +11,40 @@ import {
   NoContacts,
 } from './App.styled';
 
-export class App extends Component {
-  state = {
-    contacts: [
+
+const CONTACTS_LS_KEY = 'contacts';
+const initialContacts = [
       { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
       { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
+    ];
+
+    export class App extends Component {
+  state = {
+    contacts: [],
     filter: '',
   };
+
+  componentDidMount(){
+    const saveContacts = localStorage.getItem(CONTACTS_LS_KEY);
+
+    if (saveContacts !== null) {
+      const parsedContacts = JSON.parse(saveContacts);
+      this.setState({contacts: parsedContacts});
+      return;
+    }
+    this.setState({contacts: initialContacts});
+  }
+
+  componentDidUpdate(_, prevState){
+    if (this.state.contacts !== prevState.contacts){
+      localStorage.setItem(
+        CONTACTS_LS_KEY,
+        JSON.stringify(this.state.contacts)
+      );
+    }
+  }
 
   handleFormSubmit = contact => {
     const isInContacts = this.state.contacts.some(
